@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ismaster">
+	<update id="update" parameterType="isMastervo">
+
+		<choose>
+			<when test="image ==null || image ==''">
+			<![CDATA[
+			update is_master
+			set 
+			korName=#{korName}, engName=#{engName}, hanName=#{hanName}, juminNo=#{juminNo}, birth=#{birth}, birth02=#{birth02}, sex=#{sex}, 
+			marry=#{marry}, empYear=#{empYear}, money=#{money}, state=#{state}, empEtc=#{empEtc}, address=#{address}, 
+			phone=#{phone}, email=#{email}, techLev=#{techLev}, drink=#{drink}
+			]]>
+			</when>
+			<otherwise>
+			<![CDATA[
+			update is_master
+			set 
+			korName=#{korName}, engName=#{engName}, hanName=#{hanName}, juminNo=#{juminNo}, birth=#{birth}, birth02=#{birth02}, sex=#{sex}, 
+			marry=#{marry}, empYear=#{empYear}, money=#{money}, state=#{state}, empEtc=#{empEtc}, address=#{address}, 
+			phone=#{phone}, email=#{email}, techLev=#{techLev}, drink=#{drink}, image=#{image}
+			]]>
+			</otherwise>
+		</choose>	
+		<![CDATA[
+			where no=#{no}
+		]]>
+	</update>
+
+	<select id="modifyByEmp" parameterType="int" resultType="isMastervo">
+		<![CDATA[
+		select * from is_master where no = #{no }
+		]]>
+	</select>
+
+	<delete id="delete" parameterType="List">
+		<![CDATA[
+		 delete from IS_MASTER
+		 where no in
+		 ]]>
+		<foreach collection="list" item="item" index="index"
+			separator="," open="(" close=")">
+			#{item}
+		</foreach>
+
+	</delete>
+
+	<insert id="insert" parameterType="isMastervo">
+		<![CDATA[
+		 insert 
+		 INTO IS_MASTER 
+		 VALUES(seq_master_no.nextval, #{korName}, #{engName}, #{hanName}, #{juminNo}, #{birth}, #{birth02}, #{sex}, 
+			#{marry}, #{empYear}, #{money}, #{state}, #{empEtc}, #{address}, #{phone}, #{email}, #{techLev}, #{drink}, #{image})
+		]]>
+
+	</insert>
+
+	<select id="getListCount" parameterType="map" resultType="int">
+		<![CDATA[
+			select count(*) from is_master
+					
+			]]>
+		<choose>
+			<when test="keyword != null and keyword !='' and filterCheck==1">
+					<![CDATA[
+					where  korName like '%${keyword }%' or sex like '%${keyword }%' or techLev like '%${keyword }%' 
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==2">
+					<![CDATA[
+					 where korName like '%${keyword }%' 
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==3">
+					<![CDATA[
+					 where sex like '%${keyword }%' 
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==4">
+					<![CDATA[
+					where  techLev like '%${keyword }%' 
+					]]>
+			</when>
+		</choose>
+
+	</select>
+
+	<select id="getEmpList" parameterType="map" resultType="isMastervo">
+			<![CDATA[
+			select * 
+			from (select rownum as rn, korName, juminNo , sex, empEtc, techLev, state, no 
+				from IS_MASTER 
+ 
+			]]>
+		<choose>
+			<when test="keyword != null and keyword !='' and filterCheck==1">
+					<![CDATA[
+					  where korName like '%${keyword }%' or sex like '%${keyword }%' or techLev like '%${keyword }%'
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==2">
+					<![CDATA[
+					where  korName like '%${keyword }%' 
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==3">
+					<![CDATA[
+					where  sex like '%${keyword }%' 
+					]]>
+			</when>
+			<when test="keyword != null and keyword !='' and filterCheck==4">
+					<![CDATA[
+					 where techLev like '%${keyword }%' 
+					]]>
+			</when>
+		</choose>
+			<![CDATA[
+			order by no desc)
+				where rn<=${page}*${emp_page } and rn>(${page}-1)*${emp_page }
+			]]>
+	</select>
+</mapper>
+
